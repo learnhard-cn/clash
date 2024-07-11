@@ -870,7 +870,7 @@ show_router_info() {
     echo "+---------------------------------------------------------------+"
     echo "|>> vClash当前正在使用的软件版本：                                  |"
     debug_info "vClash" "$(dbus get ${app_name}_vclash_version)"
-    debug_info "clash_premium" $(clash -v|head -n1|awk '{printf("%s_%s_%s", $2, $3, $4)}')
+    debug_info "clash_premium" $(${CONFIG_HOME}/core/clash -v|head -n1|awk '{printf("%s_%s_%s", $2, $3, $4)}')
     debug_info "yq" "$(${YQ} -V|awk '{ print $NF}')"
     debug_info "jq" "$(${JQ} -V)"
     echo "|>> vClash初始安装包自带的软件版本(分析是否个人更改过):                |"
