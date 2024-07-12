@@ -48,8 +48,8 @@ generate_package() {
 		done
 		rm -rf ./clash/clash/core
 		mkdir -p ./clash/clash/core
-		bin_list="clash.meta clash.premium"
-		# bin_list="clash.premium"
+		#bin_list="clash.meta clash.premium"
+		bin_list="clash.premium"
 		for fn in ${bin_list}; do
 			cp ./bin/${fn}_for_${arch} ./clash/clash/core/${fn}_for_${arch}
 		done
@@ -123,28 +123,28 @@ generate_dnsmasq_conf() {
 }
 
 case "$1" in
-go)
-	[[ "$2" == "" ]] && echo "缺少版本号信息!" && exit 1
-	generate_package $2 $3
-	;;
-pack)
-	[[ "$2" == "" ]] && echo "缺少版本号信息!" && exit 1
-	generate_package $2 $3
-	git add ./
-	git commit -m "build: 提交$2版本离线包"
-	git tag $2
-	work_branch="$(git branch --show-current)"
-	git checkout ksmerlin386
-	git merge ${work_branch}
-	git push --set-upstream origin ksmerlin386 --tag
-	;;
-gen_dns) # 生成Dnsmasq配置规则
-	generate_dnsmasq_conf
-	;;
-update_ruleset) # 手动更新Ruleset规则集
-	update_ruleset
-	;;
-*)
+	go)
+		[[ "$2" == "" ]] && echo "缺少版本号信息!" && exit 1
+		generate_package $2 $3
+		;;
+	pack)
+		[[ "$2" == "" ]] && echo "缺少版本号信息!" && exit 1
+		generate_package $2 $3
+		git add ./
+		git commit -m "build: 提交$2版本离线包"
+		git tag $2
+		work_branch="$(git branch --show-current)"
+		git checkout ksmerlin386
+		git merge ${work_branch}
+		git push --set-upstream origin ksmerlin386 --tag
+		;;
+	gen_dns) # 生成Dnsmasq配置规则
+		generate_dnsmasq_conf
+		;;
+	update_ruleset) # 手动更新Ruleset规则集
+		update_ruleset
+		;;
+	*)
 	usage
 	;;
 esac

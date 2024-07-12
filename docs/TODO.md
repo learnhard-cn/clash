@@ -50,3 +50,14 @@ vClash插件也经过尝试，调整了运行稳定的配置文件**clash_meta.y
 
 
 1. 开启TPROXY模式(包括 TPROXY+NAT模式)时，内网IPv6请求出去的流量显示出的公网IPv6地址其实是路由器的IPv6地址，
+
+
+```mermaid
+graph LR
+    A[外网IPv6主机A] -->|数据包| B[路由器R]
+    B -->|PREROUTING链| C[处理数据包前]
+    C -->|FORWARD链| D[数据包转发到内网主机B]
+    D -->|POSTROUTING链| E[数据包离开路由器R]
+    E -->|到达内网主机B| F[内网主机B]
+
+```

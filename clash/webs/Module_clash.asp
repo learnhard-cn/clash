@@ -216,7 +216,6 @@
                         // a 标签参数设置
                         if (dbus[ params[i] ]) {
                             E("clash_xd_ui").href = dbus['clash_yacd_ui'].replace("yacd", "xd");
-                            E(params[i]).href = dbus[params[i]];
                         }
                         break;
                     
@@ -664,6 +663,14 @@
             
             apply_action("update_geoip", "0", null, {
                 "clash_geoip_url": document.getElementById("clash_geoip_url").value,
+            });
+        }
+
+        function update_lan_ipv6_ports() {
+            dbus["clash_lan_ipv6_ports"] = document.getElementById("clash_lan_ipv6_ports").value;
+
+            apply_action("update_lan_ipv6_ports", "0", null, {
+                "clash_lan_ipv6_ports": document.getElementById("clash_lan_ipv6_ports").value,
             });
         }
 
@@ -1137,6 +1144,18 @@
                         </tr>
                         <tr>
                             <th>
+                                <label title="用于外网访问内网IPv6地址主机放行规则">内网IPv6开放端口</label>
+                            </th>
+                            <td>
+                                <input type="text" class="input_text" id="clash_lan_ipv6_ports" placeholder="22,80,443">
+                            </td>
+
+                            <td class="hasButton">
+                                <button type="button" class="button_gen" onclick="update_lan_ipv6_ports();" href="javascript:void(0);">更新</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
                                 <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">Country.mmdb文件</label>
                             </th>
                             <td>
@@ -1302,7 +1321,6 @@
 
                     <div class="KoolshareBottom" style="margin-top:5px; ">
                         <a class="tab item-tab " href="https://github.com/Dreamacro/clash" target="_blank ">Clash项目</a>
-                        <a class="tab item-tab " href="https://github.com/haishanh/yacd" target="_blank ">Yacd项目</a>
                         <a class="tab item-tab " href="https://github.com/vxiaov/vClash" target="_blank ">vClash项目</a>
                         <a class="tab item-tab " href="https://t.me/share_proxy_001" target="_blank ">TG讨论群</a>
                         <a class="tab item-tab " href="https://vlike.work/" target="_blank ">小V的博客</a>

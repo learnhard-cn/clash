@@ -16,6 +16,7 @@ CONFIG_HOME="$KSHOME/${app_name}"
 # 路由器IP地址
 lan_ipaddr="$(nvram get lan_ipaddr)"
 wan_ipaddr=$(nvram get wan0_ipaddr)
+ipv6_prefix="$(nvram get ipv6_prefix)"
 dbus set clash_lan_ipaddr=$lan_ipaddr
 
 eval $(dbus export ${app_name}_)
@@ -221,9 +222,9 @@ create_ipset() {
     tname="localnet4"
 
     # 防止重复创建ipset #
-    if ipset test $tname 127.0.0.1/8  > /dev/null 2>&1 ; then
-        return
-    fi
+    # if ipset test $tname 127.0.0.1/8  > /dev/null 2>&1 ; then
+    #     return
+    # fi
     LOGGER "开始创建 ipset: $tname"
     ipset -! destroy $tname > /dev/null 2>&1
     ipset create $tname hash:net family inet hashsize 1024 maxelem 65536
@@ -310,7 +311,7 @@ add_iptables_tproxy() {
     fi
     # 设置策略路由 v4
     ip rule add fwmark 1 table 100
-    ip route add local 0.0.0.0/0 dev lo table 100
+    ip route add local default dev lo table 100
 
     # 新建 ${app_name}_DIVERT 规则，避免已有连接的包二次通过 TPROXY，理论上有一定的性能提升
     iptables -t mangle -N ${app_name}_DIVERT
@@ -343,7 +344,7 @@ add_iptables_tproxy() {
     if [ "$clash_ipv6_mode" = "on" ] ; then
         # 设置策略路由 v6
         ip -6 rule add fwmark 1 table 106
-        ip -6 route add local ::/0 dev lo table 106
+        ip -6 route add local default dev lo table 106
 
         # 新建 ${app_name}_DIVERT 规则，避免已有连接的包二次通过 TPROXY，理论上有一定的性能提升
         ip6tables -t mangle -N ${app_name}_DIVERT
@@ -388,7 +389,7 @@ add_iptables_tproxy_nat() {
 
     # 设置策略路由 v4
     ip rule add fwmark 1 table 100
-    ip route add local 0.0.0.0/0 dev lo table 100
+    ip route add local default dev lo table 100
 
     # 新建 ${app_name}_DIVERT 规则，避免已有连接的包二次通过 TPROXY，理论上有一定的性能提升
     iptables -t mangle -N ${app_name}_DIVERT
@@ -423,7 +424,7 @@ add_iptables_tproxy_nat() {
     if [ "$clash_ipv6_mode" = "on" ] ; then
         # 设置策略路由 v6
         ip -6 rule add fwmark 1 table 106
-        ip -6 route add local ::/0 dev lo table 106
+        ip -6 route add local default dev lo table 106
 
         # 新建 ${app_name}_DIVERT 规则，避免已有连接的包二次通过 TPROXY，理论上有一定的性能提升
         ip6tables -t mangle -N ${app_name}_DIVERT
@@ -437,6 +438,10 @@ add_iptables_tproxy_nat() {
         ip6tables -t mangle -N ${app_name}_XRAY6
         ip6tables -t mangle -F ${app_name}_XRAY6
         ip6tables -t mangle -A ${app_name}_XRAY6 -p udp --dport 53 -j RETURN
+        # 仅对公网 IPv6 启用代理 
+        ip6tables -t mangle -A ${app_name}_XRAY6 ! -d 2000::/3 -j ACCEPT
+        # 放行规则: 绕过Clash代理 #
+        ip6tables -t mangle -A ${app_name}_XRAY6 -s ${ipv6_prefix}/64 -p tcp -m multiport --sports ${clash_lan_ipv6_ports} -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j RETURN
         ip6tables -t mangle -A ${app_name}_XRAY6 -m set --match-set localnet6 dst -j RETURN
         ip6tables -t mangle -A ${app_name}_XRAY6 -j RETURN -m mark --mark ${tproxy_mark}
         ip6tables -t mangle -A ${app_name}_XRAY6 -p udp -j TPROXY --on-ip ::1 --on-port ${tproxy_port} --tproxy-mark 1
@@ -447,6 +452,7 @@ add_iptables_tproxy_nat() {
         # # 代理网关本机 v6
         ip6tables -t mangle -N ${app_name}_XRAY6_MASK
         ip6tables -t mangle -A ${app_name}_XRAY6_MASK -p udp --dport 53 -j RETURN
+        ip6tables -t mangle -A ${app_name}_XRAY6_MASK ! -d 2000::/3 -j RETURN
         ip6tables -t mangle -A ${app_name}_XRAY6_MASK -m set --match-set localnet6 dst -j RETURN
         ip6tables -t mangle -A ${app_name}_XRAY6_MASK -j RETURN -m mark --mark ${tproxy_mark}
         ip6tables -t mangle -A ${app_name}_XRAY6_MASK -p udp -j MARK --set-mark 1
@@ -593,6 +599,10 @@ service_start() {
         echo "Clash开关处于关闭状态，无法启动Clash"
         return 0
     fi
+
+    # IPv6内网放行端口列表 #
+    [[ "$clash_lan_ipv6_ports" == "" ]] && clash_lan_ipv6_ports="22,80,443" && dbus set clash_lan_ipv6_ports="22,80,443"
+
     # 解决路由器刷新后，导致iptables规则丢失问题,下次启动任务时添加 #
     add_iptables_all
 
@@ -649,6 +659,9 @@ service_stop() {
 
 ########## config part ###########
 
+update_lan_ipv6_ports() {
+    LOGGER "更新端口列表为: $clash_lan_ipv6_ports , 重启后生效!"
+}
 # 更新Country.mmdb文件
 update_geoip() {
     #
@@ -870,7 +883,7 @@ show_router_info() {
     echo "+---------------------------------------------------------------+"
     echo "|>> vClash当前正在使用的软件版本：                                  |"
     debug_info "vClash" "$(dbus get ${app_name}_vclash_version)"
-    debug_info "clash_premium" $(${CONFIG_HOME}/core/clash -v|head -n1|awk '{printf("%s_%s_%s", $2, $3, $4)}')
+    debug_info "clash_premium" $(${CONFIG_HOME}/bin/clash -v|head -n1|awk '{printf("%s_%s_%s", $2, $3, $4)}')
     debug_info "yq" "$(${YQ} -V|awk '{ print $NF}')"
     debug_info "jq" "$(${JQ} -V)"
     echo "|>> vClash初始安装包自带的软件版本(分析是否个人更改过):                |"
@@ -1259,7 +1272,7 @@ do_action() {
             LOGGER "$action_job 执行出错啦!"
         fi
         ;;
-    get_proc_status|update_provider_file|update_geoip|backup_config_file|applay_new_config|upload_clash_file)
+    get_proc_status|update_provider_file|update_geoip|update_lan_ipv6_ports|backup_config_file|applay_new_config|upload_clash_file)
         # 不需要重启操作
         $action_job
         ;;
