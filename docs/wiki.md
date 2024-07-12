@@ -49,11 +49,13 @@ vClash透明代理对以上方法都进行了实现，并提供了切换选择�
 ### 001.安装vClash
 最新版本安装包存放到release目录中，对应下载链接:
 
-
-| Github分支    | 支持Koolshare路由器固件版本 | Github下载链接                                                                                                                                                                        | 国内CDN下载链接                                                                                             |
-| ----------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| main        | 华硕380版本(停止更新)            | [斐迅K3梅林380版本](https://github.com/vxiaov/vClash/raw/main/release/clash.tar.gz)                     | [斐迅K3梅林380版本](https://cdn.jsdelivr.net/gh/vxiaov/vClash@main/release/clash.tar.gz)              |
-| ksmerlin386(默认主分支) | 华硕官改、梅林386版本(持续更新)       | [梅林386版本](https://github.com/vxiaov/vClash/raw/ksmerlin386/release/clash.tar.gz) | [梅林386版本](https://cdn.jsdelivr.net/gh/vxiaov/vClash@ksmerlin386/release/clash.tar.gz) |
+| Github分支  | 支持Koolshare路由器固件版本         | CPU架构       | Github下载链接                                                                                  | 国内CDN下载链接                                                                                   |
+| ----------- | ----------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| main        | 华硕380版本(停止更新)               | armv7l        | [Github安装包](https://github.com/vxiaov/vClash/raw/main/release/clash.tar.gz)                  | [CDN安装包](https://cdn.jsdelivr.net/gh/vxiaov/vClash@main/release/clash.tar.gz)                  |
+| ksmerlin386 | 华硕官改、梅林386/388版本(持续更新) | aarch64/arm64 | [Github安装包](https://github.com/vxiaov/vClash/raw/ksmerlin386/release/clash.tar.gz)           | [CDN安装包](https://cdn.jsdelivr.net/gh/vxiaov/vClash@ksmerlin386/release/clash.tar.gz)           |
+| ksmerlin386 | 华硕官改、梅林386/388版本(持续更新) | armv7l        | [Github安装包](https://github.com/vxiaov/vClash/raw/ksmerlin386/release/clash.armv5.tar.gz)     | [CDN安装包](https://cdn.jsdelivr.net/gh/vxiaov/vClash@ksmerlin386/release/clash.armv5.tar.gz)     |
+| ksmerlin386 | 华硕官改、梅林384版本(持续更新)     | armv7l        | [Github安装包](https://github.com/vxiaov/vClash/raw/ksmerlin386/release/clash_384.tar.gz)       | [CDN安装包](https://cdn.jsdelivr.net/gh/vxiaov/vClash@ksmerlin386/release/clash_384.tar.gz)       |
+| ksmerlin386 | 华硕官改、梅林384版本(持续更新)     | aarch64/arm64 | [Github安装包](https://github.com/vxiaov/vClash/raw/ksmerlin386/release/clash_384.armv5.tar.gz) | [CDN安装包](https://cdn.jsdelivr.net/gh/vxiaov/vClash@ksmerlin386/release/clash_384.armv5.tar.gz) |
 
 
 路由器插件的安装方法使用 **“离线安装”**，安装前遇到**非法关键词检测**问题可以看下面解决方法。
@@ -89,51 +91,8 @@ sed -i 's/local ILLEGAL_KEYWORDS=.*/local ILLEGAL_KEYWORDS="xxxxxxxxxxxxxxxxxxx"
 1. 挂载虚拟内存: 支持**USB接口路由器**可以插入一个1GB以上的优盘作为虚拟内存挂载，可以使用路由器自带了虚拟内存插件。[阅读挂载虚拟内存教程文章](https://vlike.work/VPS/router-mount-swap.html)。
 
 
-### 002.配置vClash-代理订阅源
-> vClash实际上安装后即可启动使用，因为配置文件已经内置了，但没有代理节点启动了网络也是有问题的。因此，还是需要 **添加自己的代理节点** 或者更新一下 **订阅源** 才可以。
 
-添加代理节点:
-
-1. 有自己的代理节点： 在 **节点管理**页面添加即可，注意格式是base64链接格式
-2. 有机场订阅源HTTP链接: 推荐 在**节点管理**页面中添加，也可以在 **订阅管理**中添加订阅源URL地址，两者更新的代理节点区别是:添加的代理组不一样，使用的命令不一样，前者使用uri_decoder,或者使用curl。
-3. 网上找的免费订阅源HTTP链接: 因为这种免费HTTP订阅源不稳定，推荐在**订阅管理**中添加，而**节点管理**适合保存自己私人的订阅源。
-
-### 003.配置vClash-黑名单白名单规则
-
-配置rule规则前提： [阅读clash官网rule订阅规则配置方法](https://github.com/Dreamacro/clash/wiki/premium-core-features#rule-providers)
-
-阅读了解配置规则后，在 **在线编辑**页面中可以找到如下几个文件:
-
-- ./ruleset/rule_diy_blacklist.yaml : 自定义的黑名单规则，这里的规则将会走代理节点。
-- ./ruleset/rule_diy_whitelist.yaml : 自定义的白名单规则，这里的规则将会直连。
-
-上面两个配置文件规则实现在 **./ruleset/rule_basic.yaml**中定义，内容如下:
-
-```yaml
-  - RULE-SET,whitelist_rules,DIRECT
-  - RULE-SET,blacklist_rules,默认代理组
-```
-
-如果你又别的想法，也可以自己修改 **./ruleset/rule_basic.yaml**文件实现。
-
-### 004.在线编辑页面使用说明
-
-**在线编辑**页面提供了编辑文件的功能，类似一个简易的编辑器，没有任何按钮，编辑过程通过下面几个快捷键实现:
-
-1. 编辑文件 : ctrl+e
-2. 保存文件 : ctrl+s
-3. 重载文件 : ctrl+r
-4. 复制选中 : ctrl+c
-5. 粘帖内容 : ctrl+v
-6. 撤销操作 : ctrl+z
-7. 重做操作 : ctrl+shift+z
-8. 全选内容 : ctrl+a
-
-这几个快捷键已经足够编辑文件使用了。
-
-如果编辑文件没保存就点击其他页面时会提示是否保存编辑内容，不会担心忘记保存而丢失配置情况了。
-
-### 005.是否升级新版本clash?使用Clash版本建议
+### 003.是否升级新版本clash?使用Clash版本建议
 
 如果你使用最新版本的Clash程序发现不正常(例如：每次重启后都需要设置节点信息，无法保存select模式节点信息)，那么建议你更换到[Clash Premium 2021.09.15 版本](https://github.com/vlikev/clash_binary/tree/f3c4db627f8d091682dc26d5bfe5efd7ad93a8f4/premium/)。
 
@@ -142,26 +101,6 @@ sed -i 's/local ILLEGAL_KEYWORDS=.*/local ILLEGAL_KEYWORDS="xxxxxxxxxxxxxxxxxxx"
 可以从代码里看到， Clash 这个版本是使用文件方式保存节点选择信息，保存信息目的是为了重启clash后可以不用重新手工设置节点选择信息，但下一个版本`2021.11.08(对应v1.8.0)版本`就更换为名为`cache.db`文件保存信息(代码里是使用了第三方k/v库`bbolt`,但在一些arm系列路由器里无法正常工作)，原因在于/jffs文件系统类型jffs2不支持 **mmap**导致。
 
 如果你使用的不是jffs2类型文件系统，比如自己动手改成了 **ext4**类型文件系统，可以更新到最新版本。
-
-### 006.关于内存使用率问题-clash不能被黑锅
-
-**clash内存占用太大怎么办？**
-
-什么情况算是占用内存过大呢？ 还是需要举个例子:
-
-以 512MB 内存的路由器来说，使用 **白名单模式**启动时占用内存 **68MB**, 其中包含了国内的 **direct.yaml**规则文件(文件大小约1.3MB)，用了一段时间后，clash内存使用情况增长到了 **158MB** ，此时可能就有问题了。
-
-这个问题要分情况来说：
-
-- 情况一:DNS配置错误导致,配置过多DNS也没好处，比如谷歌的DoH和DoT无法使用，所以发送的DNS请求无应答(状态是SYN_SENT),解决方法是**删掉无效的DNS**,例如下面情况:
-
-        lsof -p 11833| grep -i syn
-        clash   11833 root   56u     inet 33184179      0t0      TCP you-public-ip:41808->8.8.8.8:853 (SYN_SENT)
-        clash   11833 root   59u     inet 33184180      0t0      TCP you-public-ip:37848->1.1.1.1:853 (SYN_SENT)
-        clash   11833 root   60u     inet 33184181      0t0      TCP you-public-ip:58164->8.8.8.8:https (SYN_SENT)
-
-- 情况二:使用规则文件过大导致, 网上分享的某些规则集文件非常大，加载到内存中会导致占用内存空间增大，这种情况就只能通过**精简rule规则文件**来达到 **减少内存占用**效果。
-
 
 
 ## 002.开发知识
@@ -219,7 +158,6 @@ sed -i 's/local ILLEGAL_KEYWORDS=.*/local ILLEGAL_KEYWORDS="xxxxxxxxxxxxxxxxxxx"
 ### 003.实现功能简述
 
 
-
 #### v1开头版本为支持KS梅林380版本固件
 
 - [x] Clash服务启动开关
@@ -233,13 +171,14 @@ sed -i 's/local ILLEGAL_KEYWORDS=.*/local ILLEGAL_KEYWORDS="xxxxxxxxxxxxxxxxxxx"
 > 为了支持 ss/ssr/vmess URI后台解析，个人开发了`GoLang`版本的`uri_decoder`工具，目的是解析URI并生成新增加节点的yaml文件，最后使用`yq`命令合并两个文件，完成节点添加功能。
 
 
-#### v2开头版本为支持KS梅林384/386版本固件
+#### v2开头版本为支持KS梅林384/386/388版本固件
 
 与v1系列版本差别就是对`Koolshare`软件中心API的`1.5`版本支持。
 
 由于差异比较大的缘故，单独分了一个分支进行维护。
 
 目前支持功能：
+
 - [x] 透明代理模式
 - [x] URL订阅源更新(走路由器代理访问)
 - [x] 支持**DIY代理组**节点`添加`/`删除`功能(由于URI的不规范原因,支持的代理参数可能存在解析问题)
@@ -373,19 +312,6 @@ V带着面具，但Clash图标加面具就啥也看不到了，于是想到了�
 之后，新路由器使用了`梅林改版386固件`, 于是又开发了支持`386版本`的**ksmerlin386分支**版本。
 
 ## 005.问题记录
-
-### 路由器更新Github上安装包失败问题
-
-插件实现了将内网发给路由器的DNS请求传给代理转发，并没有解决路由器内部DNS请求的代理转发，所以，从路由器本机的DNS请求都是直接转发出去的，必然存在DNS污染问题。
-
-解决方法：
-
-暂时没解决，计划通过集成其他DNS代理工具、或者使用dnsmasq的DNS转发配置临时解决。
-
-1. 配置dnsmasq，将tcp/udp的dns解析上游转到Clash的DNS端口
-
-
-总之，这都是因为RT-AC86U上没有启用TPROXY模块引起的问题。
 
 ### 如何正确的透传支持QUIC的网站
 
