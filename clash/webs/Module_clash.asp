@@ -183,7 +183,7 @@
         function conf2obj() {
 
             var params = [
-                'clash_geoip_url', 'clash_yacd_ui'
+                'clash_geoip_url', 'clash_yacd_ui','clash_lan_ipv6_ports'
             ];
             var params_chk = [
                 'clash_trans', 'clash_enable', 'clash_ipv6_mode', 'clash_log_type'
