@@ -235,6 +235,7 @@ init_env() {
     dbus set ${app_name}_vclash_version="$vClash_VERSION"
     dbus set ${app_name}_tmode="NAT"
     dbus set ${app_name}_config_filepath="config/config_norelay.yaml"
+    dbus set ${app_name}_arch_type=${ARCH}
 
     # 离线安装时设置软件中心内储存的版本号和连接
     dbus set softcenter_module_${app_name}_install="1"

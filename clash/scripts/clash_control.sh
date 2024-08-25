@@ -110,6 +110,7 @@ check_config_file() {
     clash_yacd_secret=$(${YQ} e '.secret' $config_file)
     clash_yacd_ui="http://${lan_ipaddr}:${yacd_port}/ui/yacd/?hostname=${lan_ipaddr}&port=${yacd_port}&secret=$clash_yacd_secret"
     dbus set clash_yacd_ui=$clash_yacd_ui
+    [[ "$clash_arch_type" == "" ]] && dbus set clash_arch_type=`get_arch`
 }
 
 LOGGER() {

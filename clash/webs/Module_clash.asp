@@ -183,7 +183,7 @@
         function conf2obj() {
 
             var params = [
-                'clash_geoip_url', 'clash_yacd_ui','clash_lan_ipv6_ports'
+                'clash_geoip_url', 'clash_yacd_ui','clash_lan_ipv6_ports', 'clash_arch_type'
             ];
             var params_chk = [
                 'clash_trans', 'clash_enable', 'clash_ipv6_mode', 'clash_log_type'
@@ -218,7 +218,11 @@
                             E("clash_yacd_ui").href = dbus['clash_yacd_ui'];
                         }
                         break;
-                    
+                    case 'clash_arch_type':
+                        if (dbus[ params[i] ]) {
+                            E("clash_arch_type").innerHTML = dbus['clash_arch_type'];
+                        }
+                        break;
                     default:
                         // 普通类型数据
                         if (dbus[ params[i] ]) 
@@ -1025,7 +1029,7 @@
                         <!--插件特点-->
                         <p style="color:#FC0;">
                             <b><a style="color: rgb(0, 255, 60);font-size: 16px;" href="https://github.com/vxiaov/vClash">vClash目标</a></b>:实现一个简单、安装即用的科学上网插件,支持ss/ssr/v2ray/trojan等方式科学上网。<br/>
-                            <b style="color: rgb(0, 255, 60);font-size: 16px;">1.问题反馈:</b>访问<a style="color: rgb(0, 255, 60);" href="https://github.com/vxiaov/vClash/issues" target="_blank">vClash项目>新建Issue</a>反馈你的问题，请尽量详细描述问题现象，将你的<b>路由信息</b>内容也包含在内。<br />
+                            <b style="color: rgb(255, 26, 26);">问题反馈:</b>访问<a style="color: rgb(255, 26, 26);text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);" href="https://github.com/vxiaov/vClash/issues" target="_blank">vClash项目>新建Issue</a>反馈你的问题，请尽量详细描述问题现象，将你的<b>路由信息</b>内容也包含在内。<br />
                             <b>透明代理模式说明: </b> <br />
                             <b>&nbsp;&nbsp; 1.NAT模式:</b>默认模式,万能通用规则,但不支持IPv6透传,国内IPv6直连正常<br/>
                             <b>&nbsp;&nbsp; 2.TPROXY模式:</b>支持IPv6透传,UDP协议透传存在问题,比如访问raw.githusercontent.com返回0.0.0.0<br />
@@ -1177,6 +1181,7 @@
                             </th>
                             <td colspan="2">
                                 <input type="button" class="button_gen" onclick="backup_config_file();" value="开始备份">
+                                <p><b>包括</b>:环境变量、自定义providers、自定义rules等。<b>不包括</b>: clash内核文件和网络自动下载的文件.</p>
                             </td>
                         </tr>
                         <tr>
@@ -1186,32 +1191,28 @@
                             <td colspan="2">
                                 <input style="color:#FFCC00;*color:#000;width: 200px;" id="restore_file" type="file" name="file">
                                 <input type="button" class="button_gen" onclick="restore_config_file();" value="恢复配置">
+                                <p><b>提示：</b>上传之前备份的配置压缩文件，通过恢复备份配置可以快速恢复个性化配置。</p>
                             </td>
                         </tr>
                         <tr>
                             <th>
-                                <label>上传<b>config.yaml</b>文件</label>
+                                <label>上传<b>启动配置</b></label>
                             </th>
                             <td colspan="2">
                                 <input style="color:#FFCC00;*color:#000;width: 200px;" id="file" type="file" name="file">
-                                <input type="button" class="button_gen" onclick="upload_config_file();" value="上传配置">
+                                <input type="button" class="button_gen" onclick="upload_config_file();" value="上传启动配置">
+                                <p><b>提醒</b>: 上传新Clash配置文件<b>不会立即生效</b>，请手工切换新配置。</p>
                             </td>
                         </tr>
                         <tr>
                             <th>
-                                 <label>手工升级<b>Clash</b></label>
+                                 <label>上传<b>Clash内核</b></label>
                             </th>
                             <td colspan="2">
                                 <input style="color:#FFCC00;*color:#000;width: 200px;" id="clash_file" type="file" name="file">
-                                <input type="button" class="button_gen" onclick="upload_clash_file();" value="上传Clash">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>注意事项</b>:<br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;1.<b>Clash升级地址可选: <a target="_blank" href="https://downloads.clash.wiki/ClashPremium/">【clash.wiki】</a> &nbsp;&nbsp; <a target="_blank" href="https://github.com/MetaCubeX/mihomo">【Clash.Meta】</a> &nbsp;&nbsp; <a target="_blank" href="https://github.com/vxiaov/clash_binary/">【clash官方发布包备份】</a><br/>
-                                &nbsp;&nbsp;&nbsp;&nbsp;2. 重要提醒: 上传新Clash配置文件<b>不会立即生效</b>，请手工切换新配置。<br/>
-                                &nbsp;&nbsp;&nbsp;&nbsp;3. 重要提醒: 官方网站下载的Clash内核文件<b>18MB左右</b>，可能导致存储空间不够问题，建议(upx命令)缩减为更小的程序再上传。<br/>
+                                <input type="button" class="button_gen" onclick="upload_clash_file();" value="上传Clash内核">
+                                <br />
+                                <p><b>提醒</b>: 请选择<b id="clash_arch_type"></b>架构类型Clash内核上传，错误类型内核是无法使用的!</p>
                             </td>
                         </tr>
                     </table>
@@ -1245,8 +1246,8 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <p style="color: rgb(182, 222, 2);"> Clash配置规则</b>: 请阅读<a target="_blank" href="https://clash.wiki/configuration/configuration-reference.html">Clash配置说明文档</a>，编辑快捷键: <br/></p>
-                                <p style="color: rgb(248, 5, 62);">&nbsp;&nbsp;&nbsp;&nbsp;Ctrl+E: <b>开始编辑</b> Ctrl+S: <b>保存</b> Ctrl+R: <b>重新加载</b> Ctrl+C:<b>复制</b> Ctrl+V:<b>粘帖</b><br/>&nbsp;&nbsp;&nbsp;&nbsp;Ctrl+Z: <b>撤销(undo)</b> Ctrl+Shift+Z: <b>重做(redo)</b></p>
+                                <p style="color: rgb(182, 222, 2);"><br/></p>
+                                <p style="color: rgb(248, 5, 62);">&nbsp;&nbsp;&nbsp;&nbsp;编辑快捷键: Ctrl+E: <b>开始编辑</b> Ctrl+S: <b>保存</b> Ctrl+R: <b>重新加载</b><br/>&nbsp;&nbsp;&nbsp;&nbsp; Ctrl+C:<b>复制</b> Ctrl+V:<b>粘帖</b>  Ctrl+Z: <b>撤销(undo)</b> Ctrl+Shift+Z: <b>重做(redo)</b></p>
                             </td>
                         </tr>
                     </table>
@@ -1260,10 +1261,10 @@
                         <tr>
                             <td>
                                 <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">使用说明：</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">1. 插件的兼容性</b>: 透明代理模式时会与<b style="color: rgb(32, 252, 32);">其他代理插件冲突</b> ，使用前要关闭其他透明代理插件。</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">2. 学习配置规则</b>: 官方文档已经删库，学习文档自己网上查找，很多的。</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. 学习插件用法</b>: 可阅读<a target="_blank" href="https://github.com/vxiaov/vClash/wiki">vClash项目wiki页面</a></p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">4. clash的更新</b>: 官方不再更新并不意味着不能使用，clash只是一个代理路由功能，能用即可，这里提供了<a target="_blank" href="https://github.com/vxiaov/clash_binary">clash历史发布版本链接</a></p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(248, 5, 62);">1. 插件的兼容性</b>: 透明代理模式时会与<b style="color: rgb(248, 5, 62);">其他代理插件冲突</b> ，使用前要关闭其他透明代理插件。</p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">2. 学习vClash插件用法</b>: 请阅读 <a target="_blank" href="https://github.com/vxiaov/vClash/wiki">vClash项目文档</a></p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. Clash配置规则</b>: <a target="_blank" href="https://clash.wiki/configuration/configuration-reference.html">clash.wiki配置文档</a></p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">4. 可选Clash内核下载源</b>: <a target="_blank" href="https://downloads.clash.wiki/ClashPremium/">【ClashPremium备份】</a> 、 <a target="_blank" href="https://github.com/MetaCubeX/mihomo">【Clash.Meta】</a></p>
                             </td>
                         </tr>
                     </table>
