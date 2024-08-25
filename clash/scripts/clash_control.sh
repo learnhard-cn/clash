@@ -917,7 +917,7 @@ backup_config_file() {
         cur_filelist=""
         for fn in $file_list
         do
-            [[ ! -r "${CONFIG_HOME}/${fn}" ]] && LOGGER "没不到备份文件或目录: ${CONFIG_HOME}/${fn}" && continue
+            [[ ! -r "${CONFIG_HOME}/${fn}" ]] && LOGGER "已忽略没找到的备份文件或目录: ${CONFIG_HOME}/${fn}" && continue
             cur_filelist="$cur_filelist $fn"
         done
         # 压缩文件名
