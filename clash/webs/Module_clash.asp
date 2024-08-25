@@ -215,7 +215,7 @@
                     case 'clash_yacd_ui':
                         // a 标签参数设置
                         if (dbus[ params[i] ]) {
-                            E("clash_xd_ui").href = dbus['clash_yacd_ui'].replace("yacd", "xd");
+                            E("clash_yacd_ui").href = dbus['clash_yacd_ui'];
                         }
                         break;
                     
@@ -840,7 +840,7 @@
         // 切换 clash 启动配置文件
         function switch_clash_config() {
             apply_action("switch_clash_config", "3", function(data) {
-                E("clash_xd_ui").href = data['clash_yacd_ui'].replace("yacd","xd");
+                E("clash_yacd_ui").href = data['clash_yacd_ui'];
                 show_result("切换为" + dbus["clash_config_filepath"] + "配置文件", 1000);
             }, {
                 "clash_config_filepath" : dbus["clash_config_filepath"]
@@ -1297,7 +1297,7 @@
                     <div id="status_tools " style="margin-top: 25px; padding-bottom: 20px;">
                         <a type="button" class="button_gen" onclick="get_proc_status(); " href="javascript:void(0); ">状态检查</a> &nbsp;&nbsp;&nbsp;
                         <a type="button" class="button_gen" onclick="show_router_info(); " href="javascript:void(0); ">路由信息</a> &nbsp;&nbsp;&nbsp;
-                        <a type="button" class="button_gen" id="clash_xd_ui"  href="javascript:void(0); " target="_blank">XD控制面板</a>
+                        <a type="button" class="button_gen" id="clash_yacd_ui"  href="javascript:void(0); " target="_blank">控制面板</a>
                     </div>
 
                     <div>
