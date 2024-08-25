@@ -191,16 +191,26 @@ copy_files() {
     LOGGER 复制相关的脚本文件！
     [[   -d "${KSHOME}/${app_name}" ]] && LOGGER "目录已经存在!直接复制文件，可能会覆盖已有文件."
     [[ ! -d "${KSHOME}/${app_name}" ]] && LOGGER "新建 ${KSHOME}/${app_name} 目录" && mkdir ${KSHOME}/${app_name}
-    cp -rf ./${app_name}/* ${KSHOME}/${app_name}/
-    cp -f ./scripts/${app_name}_*.sh ${KSHOME}/scripts/
-    cp -f ./uninstall.sh ${KSHOME}/scripts/uninstall_${app_name}.sh
+    
+    [[ ! -d "${KSHOME}/${app_name}" ]] && LOGGER "目录缺失: ${KSHOME}/${app_name} ,无法继续安装!" && exit_install 1
+
+    for tn in bin config core dashboard providers ruleset version Country.mmdb
+    do
+        cp -rf ./${app_name}/${tn} ${KSHOME}/${app_name}/ || LOGGER "拷贝${tn}目录失败!"
+    done
+    clash_bin=$(ls "${KSHOME}/${app_name}/core/clash.premium_for_*")
+    [[ ! -f "${clash_bin}" ]] && LOGGER "Clash内核文件缺失!安装失败!" && exit_install 2
+    ln -sf ${clash_bin} ${KSHOME}/${app_name}/bin/clash
+
+    cp -f ./scripts/${app_name}_control.sh ${KSHOME}/scripts/  || LOGGER "拷贝 ${app_name}_control.sh 失败!"
+    cp -f ./uninstall.sh ${KSHOME}/scripts/uninstall_${app_name}.sh || LOGGER "拷贝 uninstall_${app_name}.sh 失败!"
 
     chmod 755 ${KSHOME}/scripts/${app_name}_*.sh
 
     LOGGER 复制相关的网页文件！
-    cp -rf ./webs/Module_${app_name}.asp ${KSHOME}/webs/
-    cp -rf ./res/${app_name}_* ${KSHOME}/res/
-    cp -rf ./res/icon-${app_name}.png ${KSHOME}/res/
+    cp -rf ./webs/Module_${app_name}.asp ${KSHOME}/webs/ || LOGGER "拷贝 webs/Module_${app_name}.asp 文件失败!"
+    cp -rf ./res/clash_style.css ${KSHOME}/res/  || LOGGER "拷贝 res/clash_style.css 文件失败!"
+    cp -rf ./res/icon-${app_name}.png ${KSHOME}/res/ || LOGGER "拷贝 res/icon-${app_name}.png 文件失败!"
 
     LOGGER 添加自启动脚本软链接
     ln -sf ${KSHOME}/scripts/${app_name}_control.sh ${KSHOME}/init.d/S99${app_name}.sh
@@ -217,6 +227,8 @@ init_env() {
     CLASH_VERSION=$(sed -n '2p' ${CONFIG_HOME}/version| cut -d: -f2)
     dbus set ${app_name}_version="$CLASH_VERSION"
     dbus set ${app_name}_vclash_version="$vClash_VERSION"
+    dbus set ${app_name}_tmode="NAT"
+    dbus set ${app_name}_config_filepath="config/config_norelay.yaml"
 
     # 离线安装时设置软件中心内储存的版本号和连接
     dbus set softcenter_module_${app_name}_install="1"

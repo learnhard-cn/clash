@@ -39,7 +39,6 @@ generate_package() {
 	# 拷贝可执行文件，构建最小安装包
 	for arch in arm64 armv5 ; do
 		
-		echo -n "arm384" >clash/.valid
 		rm -rf ./clash/clash/bin
 		mkdir ./clash/clash/bin
 		bin_list="yq jq"
@@ -54,14 +53,14 @@ generate_package() {
 			cp ./bin/${fn}_for_${arch} ./clash/clash/core/${fn}_for_${arch}
 		done
 		if [ "$arch" = "armv5" ]; then
-			tar zcf ./release/clash_384.${arch}.tar.gz clash/
-			echo -n "hnd|arm384|arm386|p1axhnd.675x" >clash/.valid
-			tar zcf ./release/clash.${arch}.tar.gz clash/
+			suffix="${arch}.tar.gz"
 		else
-			tar zcf ./release/clash_384.tar.gz clash/
-			echo -n "hnd|arm384|arm386|p1axhnd.675x" >clash/.valid
-			tar zcf ./release/clash.tar.gz clash/
+			suffix="tar.gz"
 		fi
+		echo -n "arm384" >clash/.valid
+		tar zcf ./release/clash_384.${suffix} clash/
+		echo -n "hnd|arm384|arm386|p1axhnd.675x" >clash/.valid
+		tar zcf ./release/clash.${suffix} clash/
 	done
 	rm -rf ./clash/clash/bin ./clash/clash/core
 }
