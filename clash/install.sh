@@ -198,9 +198,15 @@ copy_files() {
     do
         cp -rf ./${app_name}/${tn} ${KSHOME}/${app_name}/ || LOGGER "拷贝${tn}目录失败!"
     done
-    clash_bin=$(ls "${KSHOME}/${app_name}/core/clash.premium_for_*")
-    [[ ! -f "${clash_bin}" ]] && LOGGER "Clash内核文件缺失!安装失败!" && exit_install 2
-    ln -sf ${clash_bin} ${KSHOME}/${app_name}/bin/clash
+    core_files=`ls ${KSHOME}/${app_name}/core`
+    LOGGER "安装内置的内核文件列表: ${core_files}"
+    
+    default_clash_bin=`find ${KSHOME}/${app_name}/core -type f -name "clash.premium*"|head -1`
+    [[ ! -f "${default_clash_bin}" ]] && LOGGER "Clash内核文件缺失!安装失败!" && exit_install 2
+    ln -sf ${default_clash_bin} ${KSHOME}/${app_name}/bin/clash
+    default_clash_filename="core/`basename $default_clash_bin`"
+    dbus set ${app_name}_core_current="${default_clash_filename}"
+    LOGGER "设置默认clash内核 $default_clash_filename"
 
     cp -f ./scripts/${app_name}_control.sh ${KSHOME}/scripts/  || LOGGER "拷贝 ${app_name}_control.sh 失败!"
     cp -f ./uninstall.sh ${KSHOME}/scripts/uninstall_${app_name}.sh || LOGGER "拷贝 uninstall_${app_name}.sh 失败!"
