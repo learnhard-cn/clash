@@ -201,7 +201,7 @@ copy_files() {
     core_files=`ls ${KSHOME}/${app_name}/core`
     LOGGER "安装内置的内核文件列表: ${core_files}"
     
-    default_clash_bin=`find ${KSHOME}/${app_name}/core -type f -name "clash.premium*"|head -1`
+    default_clash_bin=`find ${KSHOME}/${app_name}/core -name "clash.premium*"`
     [[ ! -f "${default_clash_bin}" ]] && LOGGER "Clash内核文件缺失!安装失败!" && exit_install 2
     ln -sf ${default_clash_bin} ${KSHOME}/${app_name}/bin/clash
     default_clash_filename="core/`basename $default_clash_bin`"

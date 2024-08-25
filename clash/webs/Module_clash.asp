@@ -546,6 +546,7 @@
                     if (typeof(res) != "undefined" && res.length > 0) {
                         var obj = res[0];
                         var ver_res = compareVersions(obj.name, dbus["clash_vclash_version"]);
+                        console.log(ver_res,dbus["clash_vclash_version"],obj);
                         if (ver_res > 0 ) { // obj.name != dbus["clash_vclash_version"]
                             $j("#clash_vclash_version_status").html("<i>当前版本：" + dbus["clash_vclash_version"] + "，</i>有新版本：" + obj.name);
                             dbus["clash_vclash_new_version"] = obj.name;
