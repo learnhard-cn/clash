@@ -105,12 +105,13 @@ check_config_file() {
     [[ "$clash_core_current" == "" ]] && dbus set clash_core_current="clash_for_arm64"
     [[ "$clash_core_list" == "" ]] && list_clash_core
 
+    [[ "$clash_arch_type" == "" ]] && dbus set clash_arch_type=`get_arch`
+    
     # 编辑文件没指定或文件不存在则获取默认值 #
     [[ "$clash_edit_filepath" == "" || ! -f "${CONFIG_HOME}/$clash_edit_filepath" ]] && dbus set clash_edit_filepath="$clash_config_filepath"
     clash_yacd_secret=$(${YQ} e '.secret' $config_file)
     clash_yacd_ui="http://${lan_ipaddr}:${yacd_port}/ui/yacd/?hostname=${lan_ipaddr}&port=${yacd_port}&secret=$clash_yacd_secret"
     dbus set clash_yacd_ui=$clash_yacd_ui
-    [[ "$clash_arch_type" == "" ]] && dbus set clash_arch_type=`get_arch`
 }
 
 LOGGER() {
