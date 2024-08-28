@@ -1263,7 +1263,7 @@
                                 <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">使用说明：</p>
                                 <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(248, 5, 62);">1. 插件的兼容性</b>: 透明代理模式时会与<b style="color: rgb(248, 5, 62);">其他代理插件冲突</b> ，使用前要关闭其他透明代理插件。</p>
                                 <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">2. 学习vClash插件用法</b>: 请阅读 <a target="_blank" href="https://github.com/vxiaov/vClash/wiki">vClash项目文档</a></p>
-                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. Clash配置规则</b>: <a target="_blank" href="https://clash.wiki/configuration/configuration-reference.html">clash.wiki配置文档</a></p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. Clash配置规则</b>: <a target="_blank" href="https://clash.wiki/configuration/configuration-reference.html">Clash.wiki配置文档</a> <a target="_blank" href="https://wiki.metacubex.one/config/">Clash.Meta配置文档</a></p>
                                 <p>&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">4. 可选Clash内核下载源</b>: <a target="_blank" href="https://downloads.clash.wiki/ClashPremium/">【ClashPremium备份】</a> 、 <a target="_blank" href="https://github.com/MetaCubeX/mihomo">【Clash.Meta】</a></p>
                             </td>
                         </tr>

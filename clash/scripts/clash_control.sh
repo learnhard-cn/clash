@@ -1041,7 +1041,7 @@ list_config_files() {
     [[ "$is_ok" == 1 ]] && LOGGER "请先修改配置文件或手动添加缺失的配置文件"
 
     # 可用clash启动配置文件列表
-    cd $CONFIG_HOME && config_filelist="$(find config/ -name "*.yaml" 2>/dev/null| awk '{ if(i>0)printf(" "); printf("%s",$0); i++; }' )"
+    cd $CONFIG_HOME && config_filelist="$(find config/* 2>/dev/null| awk '{ if(i>0)printf(" "); printf("%s",$0); i++; }' )"
     [[ "${config_filelist}" == "" ]] && LOGGER "糟糕！你没有任何可用的启动配置文件！请上传启动配置文件后再来启动!" && return 0
     dbus set clash_config_filelist="$config_filelist"
 
@@ -1109,7 +1109,7 @@ switch_clash_config() {
 
 # 获取所有 Clash Core 文件列表 #
 list_clash_core() {
-    cd $CONFIG_HOME && clash_core_list="$(find core/ -name "*clash*" 2>/dev/null | grep -vE 'bak|old' | awk '{ if(i>0)printf(" "); printf("%s",$0); i++; }' )"
+    cd $CONFIG_HOME && clash_core_list="$(find core/* 2>/dev/null | grep -vE 'bak|old' | awk '{ if(i>0)printf(" "); printf("%s",$0); i++; }' )"
     [[ "${clash_core_list}" == "" ]] && LOGGER "糟糕！你没有任何可用的Clash 内核文件！请上传Clash内核文件后再来启动!" && return 0
     dbus set clash_core_list="$clash_core_list"
 }
